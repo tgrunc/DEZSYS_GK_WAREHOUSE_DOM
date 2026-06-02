@@ -171,4 +171,86 @@ Den Demo-Abfragen liegt folgende Datenstruktur zu Grunde:
 * Filtern nach allen Produkten der Produktkategorien.  
 `db.productData.find( { 
      productCategory: { $in: [ "Waschmittel", "Getraenk" ] } 
-} )`
+} )
+`
+# PROTKOLL:
+
+## FRAGEN
+
+### Nennen Sie 4 Vorteile eines NoSQL Repository im Gegensatz zu einem relationalen DBMS
+    
+NoSQL Datenbanken sind schemalos und Datensätze können unterschiedlich aufgebaut sein.
+
+### Nennen Sie 4 Nachteile eines NoSQL Repository im Gegensatz zu einem relationalen DBMS
+
+Konsistenz ist nicht garantiert. Standardisierte Queries sind schwerer. Joins und Verbindungen zwischen Daten sind schwerer darzustellen. Oft weniger Support.
+
+### Welche Schwierigkeiten ergeben sich bei der Zusammenführung der Daten?
+
+Pro Dokument kann ein Feld unterschiedliche Daten bzw ganze andere Objekte haben. Duplidizität ist daher leicht möglich
+
+### Welche Arten von NoSQL Datenbanken gibt es?
+
+- **Dokumentenorientiert**: Daten gespeichert in flexiblen Dokument (JSON)
+- **Key-Value**: eindeutiger Schlüssel hat ein Wert
+- **Spaltenorientiert**: Spaltenfamilien
+- **Graphendatenkbank**: Nodes und Edges. Gut für Beziehungen
+
+### Nennen Sie einen Vertreter für jede Art?
+
+MongoDB, Redis, Apache Cassandra und Neo4j
+
+### Beschreiben Sie die Abkürzungen CA, CP und AP in Bezug auf das CAP Theorem
+
+CAP Theorem bezieht sich daraum das nur diese Paare an Eigenschaften garantiert sein können:
+
+- **C**onsistency + **A**vailability
+- **C**onsistency + **P**artition Tolerance
+- **A**vailability + **P**artition Tolerance
+
+### Mit welchem Befehl koennen Sie den Lagerstand eines Produktes aller Lagerstandorte anzeigen.
+
+```MongoDB
+db.warehouseData.find(
+      { "productData.productID": "00-871895" },
+      { "warehouseName": 1, "productData.$": 1 }
+    )
+```
+
+### Mit welchem Befehl koennen Sie den Lagerstand eines Produktes eines bestimmten Lagerstandortes anzeigen.
+
+```MongoDB
+db.warehouseData.find(
+      { "warehouseID": "1", "productData.productID": "00-871895" },
+      { "warehouseName": 1, "productData.$": 1 }
+    )
+```
+
+## Code
+
+### Warehouse.java
+
+Neues Document Entity erstellt. Beschreibt den Aufbau eines Warehouses wichtig ist hier Annotation:
+
+```java
+@Document(collection = "warehouseData")
+public class Warehouse {
+```
+
+### ProductData
+
+Entfernen von @ID, ProductData wird von Warehouse aufgerufen, nicht nötig
+
+### WarehouseRepository
+
+extends MongoRepository<Warehouse, String> Statt <ProductData, String>
+
+### WarehouseController
+
+Voll implementierte REST API
+
+### Application
+
+cleared Datenbank und fügt jedes Mal neu die Testdaten, um Testen zu vereinfachen
+
+

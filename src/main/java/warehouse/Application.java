@@ -4,63 +4,47 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-
 import warehouse.model.ProductData;
+import warehouse.model.Warehouse;
 import warehouse.repository.WarehouseRepository;
+
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 @SpringBootApplication
 public class Application implements CommandLineRunner {
 
-	@Autowired
-	private WarehouseRepository repository;
+    @Autowired
+    private WarehouseRepository repository;
 
-	public static void main(String[] args) {
-		SpringApplication.run(Application.class, args);
-	}
+    public static void main(String[] args) {
+        SpringApplication.run(Application.class, args);
+    }
 
-	@Override
-	public void run(String... args) throws Exception {
+    @Override
+    public void run(String... args) throws Exception {
+        repository.deleteAll();
 
-		// Initialize product data repository
-		repository.deleteAll();
+        Warehouse w1 = new Warehouse("1", "Linz Bahnhof", 
+                new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()), 
+                4010, "Linz", "Austria");
 
-		// save a couple of product data
-		repository.save(new ProductData("1","00-443175","Bio Orangensaft Sonne","Getraenk", 2500));
-		repository.save(new ProductData("1","00-871895","Bio Apfelsaft Gold","Getraenk", 3420));
-		repository.save(new ProductData("1","01-926885","Ariel Waschmittel Color","Waschmittel", 478));
-		repository.save(new ProductData("1","02-234811","Mampfi Katzenfutter Rind","Tierfutter", 1324));
-		repository.save(new ProductData("2","03-893173","Saugstauberbeutel Ingres","Reinigung", 7390));
-		System.out.println();
+        w1.addProduct(new ProductData("00-443175", "Bio Orangensaft Sonne", "Getraenk", 2500));
+        w1.addProduct(new ProductData("00-871895", "Bio Apfelsaft Gold", "Getraenk", 3420));
+        w1.addProduct(new ProductData("00-111111", "Wasser Still", "Getraenk", 10000));
+        w1.addProduct(new ProductData("00-222222", "Wasser Prickelnd", "Getraenk", 8500));
 
-		// fetch all products
-		System.out.println("ProductData found with findAll():");
-		System.out.println("-------------------------------");
-		for (ProductData productdata : repository.findAll()) {
-			System.out.println(productdata);
-		}
-		System.out.println();
+        w1.addProduct(new ProductData("01-926885", "Ariel Waschmittel Color", "Waschmittel", 478));
+        w1.addProduct(new ProductData("01-111111", "Persil Universal", "Waschmittel", 300));
+        w1.addProduct(new ProductData("01-222222", "Weichspueler Sommerwind", "Waschmittel", 150));
 
-		// Fetch single product
-		System.out.println("Record(s) found with ProductID(\"00-871895\"):");
-		System.out.println("--------------------------------");
-		System.out.println(repository.findByProductID("00-871895"));
-		System.out.println();
+        w1.addProduct(new ProductData("02-234811", "Mampfi Katzenfutter Rind", "Tierfutter", 1324));
+        w1.addProduct(new ProductData("02-111111", "Hundefutter Premium", "Tierfutter", 800));
+        w1.addProduct(new ProductData("02-222222", "Vogelfutter Mix", "Tierfutter", 2000));
 
-		// Fetch all products of Warehouse 1
-		System.out.println("Record(s) found with findByWarehouseID(\"1\"):");
-		System.out.println("--------------------------------");
-		for (ProductData productdata : repository.findByWarehouseID("1")) {
-			System.out.println(productdata);
-		}
-		System.out.println();
+        repository.save(w1);
 
-		// Fetch all products of Warehouse 2
-		System.out.println("Record(s) found with findByWarehouseID(\"2\"):");
-		System.out.println("--------------------------------");
-		for (ProductData productdata : repository.findByWarehouseID("2")) {
-			System.out.println(productdata);
-		}
-
-	}
-
+        System.out.println("Initialization complete:");
+        System.out.println("Added Warehouse '1' with 10 products across 3 categories.");
+    }
 }
